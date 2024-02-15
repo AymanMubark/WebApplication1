@@ -1,0 +1,80 @@
+﻿@model HomeViewModel
+
+<div class="container">
+    <div class="row">
+        <div class="col-md-4">
+            <label for="areaDropdown">Select Area:</label>
+            <select id="areaDropdown" class="form-control">
+                <option value="">-- Select Area --</option>
+                @foreach (var area in Model.Areas)
+                {
+                    <option value="@area.Id">@area.Name</option>
+                }
+            </select>
+        </div>
+
+        <div class="col-md-4">
+            <label for="unitDropdown">Select Unit:</label>
+            <select id="unitDropdown" class="form-control">
+                <option value="">-- Select Unit --</option>
+            </select>
+        </div>
+        <div class="col-md-4">
+            <label for="locationDropdown">Select Location:</label>
+            <select id="locationDropdown" class="form-control">
+                <option value="">-- Select Location --</option>
+            </select>
+        </div>
+    </div>
+</div>
+
+@section scripts {
+    <script>
+        $(document).ready(function () {
+            $("#areaDropdown").change(function () {
+                var areaId = $(this).val();
+
+                // Clear unit and location dropdowns
+                $("#unitDropdown").empty();
+                $("#locationDropdown").empty();
+
+                if (areaId) {
+                    // Fetch units for the selected area
+                    $.ajax({
+                        url: "/Home/GetUnitsByArea",
+                        type: "POST",
+                        data: { areaId: areaId },
+                        success: function (data) {
+                            $("#unitDropdown").append("<option value=''>-- Select Unit --</option>");
+                            $.each(data, function (i, item) {
+                                $("#unitDropdown").append("<option value='" + item.id + "'>" + item.name + "</option>");
+                            });
+                        }
+                    });
+                }
+            });
+
+            $("#unitDropdown").change(function () {
+                var unitId = $(this).val();
+
+                // Clear location list
+                $("#locationDropdown").empty();
+
+                if (unitId) {
+                    // Fetch locations for the selected unit
+                    $.ajax({
+                        url: "/Home/GetLocationsByUnit",
+                        type: "POST",
+                        data: { unitId: unitId },
+                        success: function (data) {
+                            $("#locationDropdown").append("<option value=''>-- Select Unit --</option>");
+                            $.each(data, function (i, item) {
+                                $("#locationDropdown").append("<option value='" + item.id + "'>" + item.name + "</option>");
+                            });
+                        }
+                    });
+                }
+            });
+        });
+    </script>
+}
