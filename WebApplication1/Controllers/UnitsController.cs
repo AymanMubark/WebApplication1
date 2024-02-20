@@ -22,8 +22,9 @@ namespace WebApplication1.Controllers
         // GET: Units
         public async Task<IActionResult> Index()
         {
-            var webApplication1Context = _context.Units.Include(u => u.Area);
-            return View(await webApplication1Context.ToListAsync());
+              return _context.Units != null ? 
+                          View(await _context.Units.ToListAsync()) :
+                          Problem("Entity set 'WebApplication1Context.Units'  is null.");
         }
 
         // GET: Units/Details/5
@@ -35,7 +36,6 @@ namespace WebApplication1.Controllers
             }
 
             var unit = await _context.Units
-                .Include(u => u.Area)
                 .FirstOrDefaultAsync(m => m.Id == id);
             if (unit == null)
             {
@@ -48,7 +48,6 @@ namespace WebApplication1.Controllers
         // GET: Units/Create
         public IActionResult Create()
         {
-            ViewData["AreaId"] = new SelectList(_context.Areas, "Id", "Id");
             return View();
         }
 
@@ -57,7 +56,7 @@ namespace WebApplication1.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,Name,AreaId")] Unit unit)
+        public async Task<IActionResult> Create([Bind("Id,Name")] Unit unit)
         {
             if (ModelState.IsValid)
             {
@@ -65,7 +64,6 @@ namespace WebApplication1.Controllers
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["AreaId"] = new SelectList(_context.Areas, "Id", "Id", unit.AreaId);
             return View(unit);
         }
 
@@ -82,7 +80,6 @@ namespace WebApplication1.Controllers
             {
                 return NotFound();
             }
-            ViewData["AreaId"] = new SelectList(_context.Areas, "Id", "Id", unit.AreaId);
             return View(unit);
         }
 
@@ -91,7 +88,7 @@ namespace WebApplication1.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,Name,AreaId")] Unit unit)
+        public async Task<IActionResult> Edit(int id, [Bind("Id,Name")] Unit unit)
         {
             if (id != unit.Id)
             {
@@ -118,7 +115,6 @@ namespace WebApplication1.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["AreaId"] = new SelectList(_context.Areas, "Id", "Id", unit.AreaId);
             return View(unit);
         }
 
@@ -131,7 +127,6 @@ namespace WebApplication1.Controllers
             }
 
             var unit = await _context.Units
-                .Include(u => u.Area)
                 .FirstOrDefaultAsync(m => m.Id == id);
             if (unit == null)
             {
@@ -148,7 +143,7 @@ namespace WebApplication1.Controllers
         {
             if (_context.Units == null)
             {
-                return Problem("Entity set 'WebApplication1Context.Unit'  is null.");
+                return Problem("Entity set 'WebApplication1Context.Units'  is null.");
             }
             var unit = await _context.Units.FindAsync(id);
             if (unit != null)

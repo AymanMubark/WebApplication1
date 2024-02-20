@@ -17,6 +17,7 @@ namespace WebApplication1.Data
         public DbSet<WebApplication1.Models.Area> Areas { get; set; } = default!;
 
         public DbSet<WebApplication1.Models.Unit>? Units { get; set; }
+        public DbSet<WebApplication1.Models.AreaUnit>? AreaUnits { get; set; }
 
         public DbSet<WebApplication1.Models.Location>? Locations { get; set; }
     }

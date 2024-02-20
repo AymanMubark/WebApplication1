@@ -10,87 +10,94 @@ using WebApplication1.Models;
 
 namespace WebApplication1.Controllers
 {
-    public class AreasController : Controller
+    public class AreaUnitsController : Controller
     {
         private readonly WebApplication1Context _context;
 
-        public AreasController(WebApplication1Context context)
+        public AreaUnitsController(WebApplication1Context context)
         {
             _context = context;
         }
 
-        // GET: Areas
+        // GET: AreaUnits
         public async Task<IActionResult> Index()
         {
-              return _context.Areas != null ? 
-                          View(await _context.Areas.ToListAsync()) :
-                          Problem("Entity set 'WebApplication1Context.Areas'  is null.");
+            var webApplication1Context = _context.AreaUnits.Include(a => a.Area).Include(a => a.Unit);
+            return View(await webApplication1Context.ToListAsync());
         }
 
-        // GET: Areas/Details/5
+        // GET: AreaUnits/Details/5
         public async Task<IActionResult> Details(int? id)
         {
-            if (id == null || _context.Areas == null)
+            if (id == null || _context.AreaUnits == null)
             {
                 return NotFound();
             }
 
-            var area = await _context.Areas
+            var areaUnit = await _context.AreaUnits
+                .Include(a => a.Area)
+                .Include(a => a.Unit)
                 .FirstOrDefaultAsync(m => m.Id == id);
-            if (area == null)
+            if (areaUnit == null)
             {
                 return NotFound();
             }
 
-            return View(area);
+            return View(areaUnit);
         }
 
-        // GET: Areas/Create
+        // GET: AreaUnits/Create
         public IActionResult Create()
         {
+            ViewData["AreaId"] = new SelectList(_context.Areas, "Id", "Name");
+            ViewData["UnitId"] = new SelectList(_context.Units, "Id", "Name");
             return View();
         }
 
-        // POST: Areas/Create
+        // POST: AreaUnits/Create
         // To protect from overposting attacks, enable the specific properties you want to bind to.
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,Name")] Area area)
+        public async Task<IActionResult> Create([Bind("Id,UnitId,AreaId")] AreaUnit areaUnit)
         {
             if (ModelState.IsValid)
             {
-                _context.Add(area);
+                _context.Add(areaUnit);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
-            return View(area);
+            ViewData["AreaId"] = new SelectList(_context.Areas, "Id", "Name", areaUnit.AreaId);
+            ViewData["UnitId"] = new SelectList(_context.Units, "Id", "Name", areaUnit.UnitId);
+            return View(areaUnit);
         }
 
-        // GET: Areas/Edit/5
+        // GET: AreaUnits/Edit/5
         public async Task<IActionResult> Edit(int? id)
         {
-            if (id == null || _context.Areas == null)
+            if (id == null || _context.AreaUnits == null)
             {
                 return NotFound();
             }
 
-            var area = await _context.Areas.FindAsync(id);
-            if (area == null)
+            var areaUnit = await _context.AreaUnits.FindAsync(id);
+            if (areaUnit == null)
             {
                 return NotFound();
             }
-            return View(area);
+            ViewData["AreaId"] = new SelectList(_context.Areas, "Id", "Name", areaUnit.AreaId);
+            ViewData["UnitId"] = new SelectList(_context.Units, "Id", "Name", areaUnit.UnitId);
+            return View(areaUnit);
         }
 
-        // POST: Areas/Edit/5
+        // POST: AreaUnits/Edit/5
         // To protect from overposting attacks, enable the specific properties you want to bind to.
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,Name")] Area area)
+        public async Task<IActionResult> Edit(int id, [Bind("Id,UnitId,AreaId")] AreaUnit areaUnit)
         {
-            if (id != area.Id)
+            if (id != areaUnit.Id)
             {
                 return NotFound();
             }
@@ -99,12 +106,12 @@ namespace WebApplication1.Controllers
             {
                 try
                 {
-                    _context.Update(area);
+                    _context.Update(areaUnit);
                     await _context.SaveChangesAsync();
                 }
                 catch (DbUpdateConcurrencyException)
                 {
-                    if (!AreaExists(area.Id))
+                    if (!AreaUnitExists(areaUnit.Id))
                     {
                         return NotFound();
                     }
@@ -115,49 +122,53 @@ namespace WebApplication1.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
-            return View(area);
+            ViewData["AreaId"] = new SelectList(_context.Areas, "Id", "Name", areaUnit.AreaId);
+            ViewData["UnitId"] = new SelectList(_context.Units, "Id", "Name", areaUnit.UnitId);
+            return View(areaUnit);
         }
 
-        // GET: Areas/Delete/5
+        // GET: AreaUnits/Delete/5
         public async Task<IActionResult> Delete(int? id)
         {
-            if (id == null || _context.Areas == null)
+            if (id == null || _context.AreaUnits == null)
             {
                 return NotFound();
             }
 
-            var area = await _context.Areas
+            var areaUnit = await _context.AreaUnits
+                .Include(a => a.Area)
+                .Include(a => a.Unit)
                 .FirstOrDefaultAsync(m => m.Id == id);
-            if (area == null)
+            if (areaUnit == null)
             {
                 return NotFound();
             }
 
-            return View(area);
+            return View(areaUnit);
         }
 
-        // POST: Areas/Delete/5
+        // POST: AreaUnits/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            if (_context.Areas == null)
+            if (_context.AreaUnits == null)
             {
-                return Problem("Entity set 'WebApplication1Context.Areas'  is null.");
+                return Problem("Entity set 'WebApplication1Context.AreaUnits'  is null.");
             }
-            var area = await _context.Areas.FindAsync(id);
-            if (area != null)
+            var areaUnit = await _context.AreaUnits.FindAsync(id);
+            if (areaUnit != null)
             {
-                _context.Areas.Remove(area);
+                _context.AreaUnits.Remove(areaUnit);
             }
             
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
 
-        private bool AreaExists(int id)
+        private bool AreaUnitExists(int id)
         {
-          return (_context.Areas?.Any(e => e.Id == id)).GetValueOrDefault();
+          return (_context.AreaUnits?.Any(e => e.Id == id)).GetValueOrDefault();
         }
     }
 }
